@@ -8,7 +8,7 @@ const validation = new Validation();
 const employeeList = new EmployeeList();
 getLocalStorange();
 /** Lấy thông tin nhân viên */
-function getInforEmployee() {
+function getInforEmployee(isAdd) {
   const account = getId("tknv").value;
   const fullName = getId("name").value;
   const email = getId("email").value;
@@ -22,15 +22,32 @@ function getInforEmployee() {
    */
   let isvalid = true;
   // check account
-  isvalid &=
-    validation.checkEmpty(account, "tbTKNV", "Vui lòng nhập Account") &&
-    validation.checkAccout(account, "tbTKNV", "Chỉ chấp nhận 4-6 chữ số") &&
-    validation.checkExistAccout(
-      account,
-      "tbTKNV",
-      "Tài khoản đã tồn tại",
-      employeeList.arr
-    );
+  if (isAdd) {
+    isvalid &=
+      validation.checkEmpty(account, "tbTKNV", "Vui lòng nhập Account") &&
+      validation.checkAccout(account, "tbTKNV", "Chỉ chấp nhận 4-6 số") &&
+      validation.checkExistAccout(
+        account,
+        "tbTKNV",
+        "Tài khoản đã tồn tại",
+        employeeList.arr
+      );
+
+    // Check email
+    isvalid &=
+      validation.checkEmpty(email, "tbEmail", "Vui lòng nhập Email") &&
+      validation.checkEmail(
+        email,
+        "tbEmail",
+        "Vui lòng nhập Email theo đúng chuẩn"
+      ) &&
+      validation.checkExistEmail(
+        email,
+        "tbEmail",
+        "Email đã tồn tại",
+        employeeList.arr
+      );
+  }
   // check Name
   isvalid &=
     validation.checkEmpty(fullName, "tbTen", "Vui lòng nhập tên") &&
@@ -39,20 +56,6 @@ function getInforEmployee() {
       "tbTen",
       `. Vui lòng không nhập kí tự đặt biêt <br>
        . Tên có ít nhất 2 kí tự `
-    );
-  // Check email
-  isvalid &=
-    validation.checkEmpty(email, "tbEmail", "Vui lòng nhập Email") &&
-    validation.checkEmail(
-      email,
-      "tbEmail",
-      "Vui lòng nhập Email theo đúng chuẩn"
-    ) &&
-    validation.checkExistEmail(
-      email,
-      "tbEmail",
-      "Email đã tồn tại",
-      employeeList.arr
     );
   // check password
   isvalid &=
@@ -132,7 +135,7 @@ function renderEmployee(data) {
 }
 /** Thêm nhân viên */
 getId("btnThemNV").addEventListener("click", function () {
-  const employee = getInforEmployee();
+  const employee = getInforEmployee(true);
   if (!employee) return;
   employeeList.addEmployee(employee);
   renderEmployee(employeeList.arr);
@@ -174,7 +177,7 @@ window.handleEdit = handleEdit;
 window.handleDelete = handleDelete;
 /** Cập nhật Thông tin*/
 getId("btnCapNhat").addEventListener("click", function () {
-  const employee = getInforEmployee();
+  const employee = getInforEmployee(false);
   employeeList.updateInfor(employee);
   renderEmployee(employeeList.arr);
   setLocalStorange();
